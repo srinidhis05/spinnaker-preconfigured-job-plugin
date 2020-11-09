@@ -53,7 +53,12 @@ jobs:
         uses: armory-io/plugin-metadata-updater@master
         env:
           GITHUB_OAUTH: ${{ secrets.TOKEN }}
+          JAVA_HOME: /usr/local/openjdk-11
         with:
           metadata: build/distributions/plugin-info.json
           binary_url: https://github.com/${{ steps.get_project_info.outputs.REPO }}/releases/download/${{ steps.get_project_info.outputs.VERSION }}/${{ steps.get_project_info.outputs.PROJECT }}-${{ steps.get_project_info.outputs.VERSION }}.zip
           metadata_repo_url: https://github.com/mayadata-io/spinnaker-plugins-repository
+      #- name: add release to plugin repo
+      #  run: |
+      #    curl -XPOST -u "${{ secrets.USERNAME }}:${{ secrets.GH_PAT }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${{ github.repository_owner }}/${{ env.PLUGINS_REPOSITORY }}/dispatches --data "{\"event_type\": \"onPluginRelease\", \"client_payload\": {\"org\": \"${{ github.repository_owner }}\", \"repo\": \"${{ steps.get_project_info.outputs.PROJECT }}\", \"released\": $(cat build/distributions/plugin-info.json)}}"
+
