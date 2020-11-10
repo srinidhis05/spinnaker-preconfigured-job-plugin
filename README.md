@@ -23,7 +23,7 @@ This plugin demonstrates how to setup a preconfigured litmuschaos experiment job
           url: https://raw.githubusercontent.com/mayadata-io/spinnaker-plugins-repository/main/plugins.json
 ```
 
-Note: The plugin metadata is maintained in the [litmus spinnaker plugins repository](https://github.com/mayadata-io/spinnaker-plugins-repository)
+**Note**: The plugin metadata is maintained in the [litmus spinnaker plugins repository](https://github.com/mayadata-io/spinnaker-plugins-repository)
 
 - Select the LitmusChaos predefined stage in the Spinnaker pipeline, with the right "dependent stage"
 
