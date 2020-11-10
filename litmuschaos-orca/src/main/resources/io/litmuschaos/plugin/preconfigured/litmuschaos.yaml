@@ -5,6 +5,7 @@ cloudProvider: kubernetes
 account: spinnaker
 credentials: spinnaker
 waitForCompletion: true
+application: litmuschaos
 parameters:
   - name: APPLICATION_NAMESPACE
     label: Namespace of AUT
