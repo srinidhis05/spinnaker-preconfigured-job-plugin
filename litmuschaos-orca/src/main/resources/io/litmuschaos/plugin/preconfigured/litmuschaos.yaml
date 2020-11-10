@@ -1,48 +1,91 @@
-label: Pod-Delete-Chaos-Plugin
+label: LitmusChaos
 type: ChaosExperimentPlugin
-description: Kill an application pod
+description: Runs litmuschaos experiments
 cloudProvider: kubernetes
 account: spinnaker
 credentials: spinnaker
-waitForCompletion: true
 application: litmuschaos
+waitForCompletion: true
 parameters:
+  - name: INSTALL_LITMUS
+    label: install litmus
+    description: Install litmus if it is not already installed
+    mapping: manifest.spec.template.spec.containers[0].env[0].value
+    defaultValue: "true" 
+  - name: EXPERIMENT_NAME
+    label: experiment name
+    description: Provide the experiment names as listed in https://hub.litmuschaos.io
+    mapping: manifest.spec.template.spec.containers[0].env[1].value
+    defaultValue: "pod-delete"                
   - name: APPLICATION_NAMESPACE
     label: Namespace of AUT
     description: Namespace where chaos will occur
-    mapping: manifest.spec.template.spec.containers[0].env[0].value
+    mapping: manifest.spec.template.spec.containers[0].env[2].value
     defaultValue: "spinnaker"
   - name: APPLICATION_LABEL
     label: Label of AUT
     description: Label by which app is filtered
-    mapping: manifest.spec.template.spec.containers[0].env[1].value
+    mapping: manifest.spec.template.spec.containers[0].env[3].value
     defaultValue: "name=hello"
   - name: CHAOS_DURATION
     label: Chaos duration
     description: The time duration for chaos insertion (in sec)	
-    mapping: manifest.spec.template.spec.containers[0].env[2].value
-    defaultValue: "30"                           
+    mapping: manifest.spec.template.spec.containers[0].env[4].value
+    defaultValue: "30" 
+  - name: TARGET_CONTAINER
+    label: Target Container
+    description: Name of the container under chaos
+    mapping: manifest.spec.template.spec.containers[0].env[5].value
+    defaultValue: "hello"    
+  - name: CONTAINER_RUNTIME
+    label: Container runtime
+    description: The container runtime interface for the cluster
+    mapping: manifest.spec.template.spec.containers[0].env[6].value
+    defaultValue: "containerd"
+  - name: SOCKET_PATH
+    label: Socket Path
+    description: Provide the socket file path, applicable only for containerd and crio runtime.
+    mapping: manifest.spec.template.spec.containers[0].env[7].value
+    defaultValue: "/run/containerd/containerd.sock"        
+  - name: UNINSTALL_LITMUS_ON_COMPLETION
+    label: uninstall litmus
+    description: Uninstall litmus if no more test to run
+    mapping: manifest.spec.template.spec.containers[0].env[8].value
+    defaultValue: "true"                                       
 manifest:
   apiVersion: batch/v1
   kind: Job
   metadata:
-    name: run-pod-delete-chaos-plugin
+      name: run-litmuschaos-experiment
   spec:
     backoffLimit: 0
     template:
       spec:
         restartPolicy: Never
         containers: 
-          - name: run-pod-delete-chaos
+          - name: run-litmuschaos-experiment
             image: mayadataio/chaos-ci-lib:ci
+            imagePullPolicy: Always
             env:
+              - name: INSTALL_LITMUS
+                value: "$(INSTALL_LITMUS)"
+              - name: EXPERIMENT_NAME
+                value: "$(EXPERIMENT_NAME)"                                
               - name: APP_NS
                 value: $(APPLICATION_NAMESPACE)
               - name: APP_LABEL
                 value: $(APPLICATION_LABEL)
               - name: TOTAL_CHAOS_DURATION
-                value: "$(CHAOS_DURATION)"                        
+                value: "$(CHAOS_DURATION)"
+              - name: TARGET_CONTAINER
+                value: "$(TARGET_CONTAINER)"                
+              - name: CONTAINER_RUNTIME
+                value: "$(CONTAINER_RUNTIME)"
+              - name: SOCKET_PATH
+                value: "$(SOCKET_PATH)"                     
+              - name: UNINSTALL_LITMUS
+                value: "$(UNINSTALL_LITMUS_ON_COMPLETION)"                                                               
             command: ["/bin/bash"]
             args:
             - -c 
-            - ./pod-delete
+            - ./experiment_entrypoint.sh
