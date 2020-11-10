@@ -1,5 +1,5 @@
 label: Pod-Delete-Chaos-Plugin
-type: ChaosExperiment
+type: ChaosExperimentPlugin
 description: Kill an application pod
 cloudProvider: kubernetes
 account: spinnaker
