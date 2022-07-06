@@ -2,8 +2,8 @@ label: LitmusChaos
 type: ChaosExperimentPlugin
 description: Runs litmuschaos experiments
 cloudProvider: kubernetes
-account: spinnaker
-credentials: spinnaker
+account: dev-cluster
+credentials: dev-cluster
 application: litmuschaos
 waitForCompletion: true
 parameters:
